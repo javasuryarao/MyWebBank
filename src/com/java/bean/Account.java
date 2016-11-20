@@ -3,8 +3,9 @@ package com.java.bean;
 public class Account {
 	
 	private int hits;
+	private int id;
 	private String userName;
-	private String accountBalance;
+	private double accountBalance;
 	public int getHits() {
 		return hits;
 	}
@@ -17,15 +18,24 @@ public class Account {
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
-	public String getAccountBalance() {
+	public double getAccountBalance() {
 		return accountBalance;
 	}
-	public void setAccountBalance(String accountBalance) {
+	public void setAccountBalance(double accountBalance) {
 		this.accountBalance = accountBalance;
+	}
+	
+	
+	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
 	}
 	@Override
 	public String toString() {
-		return "Account [hits=" + hits + ", userName=" + userName + ", accountBalance=" + accountBalance + "]";
+		return "Account [id=" + id + ", userName=" + userName + ", accountBalance=" + accountBalance + "]";
 	}
 	
 	

@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.java.bean.Account;
+import com.java.dao.mongo.AccountDAO;
+import com.java.dao.mongo.UpdateHits;
 import com.java.util.FileHelper;
 import com.java.util.SessionHelper;
 import com.java.util.StringHelper;
@@ -23,23 +25,21 @@ public class MyWebBank {
 	@RequestMapping("/welcome")
 	public ModelAndView MyWebBank(HttpServletRequest request) {
  		Account account = buildAccount(request);
-		return new ModelAndView("welcome", "message", buildMessage(account.getUserName()));
+ 		UpdateHits.update();
+ 		return new ModelAndView("welcome", "message", buildMessage(account));
 	}
 
 	private Account buildAccount(HttpServletRequest request) {
 		SessionHelper helper = new SessionHelper(request);
-		Account account = new Account();
-		account.setAccountBalance(fetchAccountBalance());
-		account.setAccountBalance(depositMoney(123.00));
+		Account account = AccountDAO.getAccount(buildUserName(helper));
+		account.setAccountBalance(depositMoney(account, 123.00));
 		account.setHits(buildPageHits(helper));
-		account.setUserName(buildUserName(helper));
 		System.out.println(account);
 		return account;
 	}
 
-	private String depositMoney(double depositAmount) {
-		String newAccountBalace = getFileHelper().updateFile(depositAmount);
-		return newAccountBalace;
+	private double depositMoney(Account account, double depositAmount) {
+		return AccountDAO.deposit(account, depositAmount);
 	}
 
 	private String buildUserName(SessionHelper helper) {
@@ -53,20 +53,14 @@ public class MyWebBank {
 		return userName;
 	}
 
-	private String buildMessage(String userName) {
-		String accountBalance = fetchAccountBalance();
+	private String buildMessage(Account account) {
 		String message = "<br><div style='text-align:center;'>"
-				+ "<h1>Hello "+userName+"!</h1><div><br>Your account balance is $"+accountBalance+"</div><br>";
+				+ "<h1>Hello "+account.getUserName()+"!</h1><div><br>Your account balance is $"+formatBalance(account.getAccountBalance())+"</div><br>";
 		return message;
 	}
 
-	private String fetchAccountBalance() {
-		String accountBalanceOnFile = getFileHelper().readFile();
-		double value = Math.random()*1000000;
-		if(StringHelper.isNotEmpty(accountBalanceOnFile))
-		{
-			value = Double.parseDouble(accountBalanceOnFile);
-		}
+	private String formatBalance(double value) {
+		
 		
 		DecimalFormat myFormatter = new DecimalFormat("###,###.##");
 	    String accountBalance = myFormatter.format(value);
