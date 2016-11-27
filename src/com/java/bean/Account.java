@@ -1,5 +1,9 @@
 package com.java.bean;
-
+/**
+ * 
+ * @author harish
+ *
+ */
 public class Account {
 	
 	private int hits;
